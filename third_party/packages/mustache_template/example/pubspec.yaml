@@ -1,0 +1,9 @@
+name: mustache_template_example
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  mustache_template:
+    path: ../
