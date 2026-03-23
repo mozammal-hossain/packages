@@ -25,7 +25,7 @@ void showBasicRendering() {
 }
 // #enddocregion BasicRender
 
-// #docregion NestedPaths`
+// #docregion NestedPaths
 void showNestedPaths() {
   final template = Template('{{ author.name }}');
   final String output = template.renderString(<String, Object>{
@@ -33,7 +33,7 @@ void showNestedPaths() {
   });
   print(output);
 }
-// #docregion NestedPaths
+// #enddocregion NestedPaths
 
 // #docregion Partials
 void showPartials() {
