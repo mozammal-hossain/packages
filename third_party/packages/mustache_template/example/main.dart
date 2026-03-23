@@ -51,8 +51,28 @@ void showPartials() {
 }
 // #enddocregion Partials
 
-// #docregion Lambdas
-void showLambdas() {
+// #docregion LambdaSimpleValue
+void showLambdaSimpleValue() {
+  final template = Template('{{# foo }}');
+  final String output = template.renderString(<String, Object>{
+    'foo': (_) => 'bar',
+  });
+  print(output);
+}
+// #enddocregion LambdaSimpleValue
+
+// #docregion LambdaSectionReplacement
+void showLambdaSectionReplacement() {
+  final template = Template('{{# foo }}hidden{{/ foo }}');
+  final String output = template.renderString(<String, Object>{
+    'foo': (_) => 'shown',
+  });
+  print(output);
+}
+// #enddocregion LambdaSectionReplacement
+
+// #docregion LambdaRenderString
+void showLambdaRenderString() {
   final template = Template('{{# foo }}{{bar}}{{/ foo }}');
   final String output = template.renderString(<String, Object>{
     'foo': (LambdaContext context) =>
@@ -61,7 +81,20 @@ void showLambdas() {
   });
   print(output);
 }
-// #enddocregion Lambdas
+// #enddocregion LambdaRenderString
+
+// #docregion LambdaRenderSource
+void showLambdaRenderSource() {
+  final template = Template('{{# foo }}{{bar}}{{/ foo }}');
+  final String output = template.renderString(<String, Object>{
+    'foo': (LambdaContext context) =>
+        context.renderSource('${context.source} {{cmd}}'),
+    'bar': 'pub',
+    'cmd': 'build',
+  });
+  print(output);
+}
+// #enddocregion LambdaRenderSource
 
 // #docregion StrictVsLenient
 void showStrictVsLenientBehavior() {
@@ -82,6 +115,9 @@ void main() {
   showBasicRendering();
   showNestedPaths();
   showPartials();
-  showLambdas();
+  showLambdaSimpleValue();
+  showLambdaSectionReplacement();
+  showLambdaRenderString();
+  showLambdaRenderSource();
   showStrictVsLenientBehavior();
 }

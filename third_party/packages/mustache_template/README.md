@@ -109,14 +109,61 @@ void showPartials() {
 
 ## Lambdas
 
-<?code-excerpt "main.dart (Lambdas)"?>
+Simple lambda value replacement:
+
+<?code-excerpt "main.dart (LambdaSimpleValue)"?>
 ```dart
-void showLambdas() {
+void showLambdaSimpleValue() {
+  final template = Template('{{# foo }}');
+  final String output = template.renderString(<String, Object>{
+    'foo': (_) => 'bar',
+  });
+  print(output);
+}
+```
+
+Section replacement:
+
+<?code-excerpt "main.dart (LambdaSectionReplacement)"?>
+```dart
+void showLambdaSectionReplacement() {
+  final template = Template('{{# foo }}hidden{{/ foo }}');
+  final String output = template.renderString(<String, Object>{
+    'foo': (_) => 'shown',
+  });
+  print(output);
+}
+```
+
+Context-aware rendering with `LambdaContext.renderString()`:
+
+<?code-excerpt "main.dart (LambdaRenderString)"?>
+```dart
+void showLambdaRenderString() {
   final template = Template('{{# foo }}{{bar}}{{/ foo }}');
   final String output = template.renderString(<String, Object>{
     'foo': (LambdaContext context) =>
         '<b>${context.renderString().toUpperCase()}</b>',
     'bar': 'pub',
+  });
+  print(output);
+}
+```
+
+In the following example, `LambdaContext.renderSource(source)` reparses
+`source` in the current context. This matches the default behavior in many
+mustache implementations, but reparsing can be slower and is often unnecessary,
+so use it only when needed.
+
+<?code-excerpt "main.dart (LambdaRenderSource)"?>
+```dart
+void showLambdaRenderSource() {
+  final template = Template('{{# foo }}{{bar}}{{/ foo }}');
+  final String output = template.renderString(<String, Object>{
+    'foo': (LambdaContext context) =>
+        context.renderSource('${context.source} {{cmd}}'),
+    'bar': 'pub',
+    'cmd': 'build',
   });
   print(output);
 }
