@@ -24,7 +24,6 @@ for unescaped output.
 
 <?code-excerpt "main.dart (BasicRender)"?>
 ```dart
-void showBasicRendering() {
   const source = '''
 {{# names }}
 <div>{{ lastname }}, {{ firstname }}</div>
@@ -42,8 +41,6 @@ void showBasicRendering() {
       <String, String>{'firstname': 'Bob', 'lastname': 'Johnson'},
     ],
   });
-  print(output);
-}
 ```
 
 ## Strict mode vs lenient mode
@@ -61,50 +58,42 @@ void showBasicRendering() {
 
 <?code-excerpt "main.dart (StrictVsLenient)"?>
 ```dart
-void showStrictVsLenientBehavior() {
-  final strictTemplate = Template('{{missing}}');
-  try {
-    strictTemplate.renderString(<String, Object>{});
-  } on TemplateException catch (exception) {
-    print(exception.message);
-  }
-
-  final lenientTemplate = Template('{{missing}}', lenient: true);
-  final String output = lenientTemplate.renderString(<String, Object>{});
-  print(output);
+try {
+  Template('{{missing}}').renderString(<String, Object>{});
+} on TemplateException catch (_) {
+  // Strict mode (default): missing keys throw when rendering.
 }
+
+final String lenientOutput = Template(
+  '{{missing}}',
+  lenient: true,
+).renderString(<String, Object>{});
 ```
 
 ## Nested paths
 
 <?code-excerpt "main.dart (NestedPaths)"?>
 ```dart
-void showNestedPaths() {
-  final template = Template('{{ author.name }}');
-  final String output = template.renderString(<String, Object>{
-    'author': <String, String>{'name': 'Greg Lowe'},
-  });
-  print(output);
-}
+final template = Template('{{ author.name }}');
+final String output = template.renderString(<String, Object>{
+  'author': <String, String>{'name': 'Greg Lowe'},
+});
 ```
 
 ## Partials
 
 <?code-excerpt "main.dart (Partials)"?>
 ```dart
-void showPartials() {
-  final partial = Template('{{ foo }}', name: 'partial');
-  Template resolver(String name) {
-    if (name == 'partial-name') {
-      return partial;
-    }
-    throw StateError('Unknown partial: $name');
+final partial = Template('{{ foo }}', name: 'partial');
+Template resolver(String name) {
+  if (name == 'partial-name') {
+    return partial;
   }
-
-  final template = Template('{{> partial-name }}', partialResolver: resolver);
-  final String output = template.renderString(<String, String>{'foo': 'bar'});
-  print(output);
+  throw StateError('Unknown partial: $name');
 }
+
+final template = Template('{{> partial-name }}', partialResolver: resolver);
+final String output = template.renderString(<String, String>{'foo': 'bar'});
 ```
 
 ## Lambdas
@@ -113,41 +102,32 @@ Simple lambda value replacement:
 
 <?code-excerpt "main.dart (LambdaSimpleValue)"?>
 ```dart
-void showLambdaSimpleValue() {
-  final template = Template('{{# foo }}');
-  final String output = template.renderString(<String, Object>{
-    'foo': (_) => 'bar',
-  });
-  print(output);
-}
+final template = Template('{{# foo }}');
+final String output = template.renderString(<String, Object>{
+  'foo': (_) => 'bar',
+});
 ```
 
 Section replacement:
 
 <?code-excerpt "main.dart (LambdaSectionReplacement)"?>
 ```dart
-void showLambdaSectionReplacement() {
-  final template = Template('{{# foo }}hidden{{/ foo }}');
-  final String output = template.renderString(<String, Object>{
-    'foo': (_) => 'shown',
-  });
-  print(output);
-}
+final template = Template('{{# foo }}hidden{{/ foo }}');
+final String output = template.renderString(<String, Object>{
+  'foo': (_) => 'shown',
+});
 ```
 
 Context-aware rendering with `LambdaContext.renderString()`:
 
 <?code-excerpt "main.dart (LambdaRenderString)"?>
 ```dart
-void showLambdaRenderString() {
-  final template = Template('{{# foo }}{{bar}}{{/ foo }}');
-  final String output = template.renderString(<String, Object>{
-    'foo': (LambdaContext context) =>
-        '<b>${context.renderString().toUpperCase()}</b>',
-    'bar': 'pub',
-  });
-  print(output);
-}
+final template = Template('{{# foo }}{{bar}}{{/ foo }}');
+final String output = template.renderString(<String, Object>{
+  'foo': (LambdaContext context) =>
+      '<b>${context.renderString().toUpperCase()}</b>',
+  'bar': 'pub',
+});
 ```
 
 In the following example, `LambdaContext.renderSource(source)` reparses
@@ -157,14 +137,11 @@ so use it only when needed.
 
 <?code-excerpt "main.dart (LambdaRenderSource)"?>
 ```dart
-void showLambdaRenderSource() {
-  final template = Template('{{# foo }}{{bar}}{{/ foo }}');
-  final String output = template.renderString(<String, Object>{
-    'foo': (LambdaContext context) =>
-        context.renderSource('${context.source} {{cmd}}'),
-    'bar': 'pub',
-    'cmd': 'build',
-  });
-  print(output);
-}
+final template = Template('{{# foo }}{{bar}}{{/ foo }}');
+final String output = template.renderString(<String, Object>{
+  'foo': (LambdaContext context) =>
+      context.renderSource('${context.source} {{cmd}}'),
+  'bar': 'pub',
+  'cmd': 'build',
+});
 ```
