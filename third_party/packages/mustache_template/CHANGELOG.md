@@ -2,6 +2,10 @@
 
 * Adds an `example/` app with runnable usage samples.
 * Updates README examples to use excerpt-managed snippets.
+* Adds unit tests for README code excerpts under `example/test/`.
+* Moves excerpt sources to `example/lib/readme_excerpts.dart`.
+* Fixes the simple lambda README example to use `{{ foo }}` instead of an
+  invalid unclosed section tag.
 
 ## 2.0.3
 

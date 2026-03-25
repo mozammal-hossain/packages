@@ -7,3 +7,6 @@ environment:
 dependencies:
   mustache_template:
     path: ../
+
+dev_dependencies:
+  test: ^1.16.5

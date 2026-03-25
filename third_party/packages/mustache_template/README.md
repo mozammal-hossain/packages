@@ -22,7 +22,7 @@ for unescaped output.
 
 ## Basic usage
 
-<?code-excerpt "main.dart (BasicRender)"?>
+<?code-excerpt "lib/readme_excerpts.dart (BasicRender)"?>
 ```dart
   const source = '''
 {{# names }}
@@ -56,7 +56,7 @@ for unescaped output.
 - Tag names may contain any characters.
 - Missing keys/members render as empty output.
 
-<?code-excerpt "main.dart (StrictVsLenient)"?>
+<?code-excerpt "lib/readme_excerpts.dart (StrictVsLenient)"?>
 ```dart
 try {
   Template('{{missing}}').renderString(<String, Object>{});
@@ -72,7 +72,7 @@ final String lenientOutput = Template(
 
 ## Nested paths
 
-<?code-excerpt "main.dart (NestedPaths)"?>
+<?code-excerpt "lib/readme_excerpts.dart (NestedPaths)"?>
 ```dart
 final template = Template('{{ author.name }}');
 final String output = template.renderString(<String, Object>{
@@ -82,7 +82,7 @@ final String output = template.renderString(<String, Object>{
 
 ## Partials
 
-<?code-excerpt "main.dart (Partials)"?>
+<?code-excerpt "lib/readme_excerpts.dart (Partials)"?>
 ```dart
 final partial = Template('{{ foo }}', name: 'partial');
 Template resolver(String name) {
@@ -100,9 +100,9 @@ final String output = template.renderString(<String, String>{'foo': 'bar'});
 
 Simple lambda value replacement:
 
-<?code-excerpt "main.dart (LambdaSimpleValue)"?>
+<?code-excerpt "lib/readme_excerpts.dart (LambdaSimpleValue)"?>
 ```dart
-final template = Template('{{# foo }}');
+final template = Template('{{ foo }}');
 final String output = template.renderString(<String, Object>{
   'foo': (_) => 'bar',
 });
@@ -110,7 +110,7 @@ final String output = template.renderString(<String, Object>{
 
 Section replacement:
 
-<?code-excerpt "main.dart (LambdaSectionReplacement)"?>
+<?code-excerpt "lib/readme_excerpts.dart (LambdaSectionReplacement)"?>
 ```dart
 final template = Template('{{# foo }}hidden{{/ foo }}');
 final String output = template.renderString(<String, Object>{
@@ -120,7 +120,7 @@ final String output = template.renderString(<String, Object>{
 
 Context-aware rendering with `LambdaContext.renderString()`:
 
-<?code-excerpt "main.dart (LambdaRenderString)"?>
+<?code-excerpt "lib/readme_excerpts.dart (LambdaRenderString)"?>
 ```dart
 final template = Template('{{# foo }}{{bar}}{{/ foo }}');
 final String output = template.renderString(<String, Object>{
@@ -135,7 +135,7 @@ In the following example, `LambdaContext.renderSource(source)` reparses
 mustache implementations, but reparsing can be slower and is often unnecessary,
 so use it only when needed.
 
-<?code-excerpt "main.dart (LambdaRenderSource)"?>
+<?code-excerpt "lib/readme_excerpts.dart (LambdaRenderSource)"?>
 ```dart
 final template = Template('{{# foo }}{{bar}}{{/ foo }}');
 final String output = template.renderString(<String, Object>{
