@@ -1,147 +1,117 @@
-<?code-excerpt path-base="example"?>
-
 # Mustache templates
 
 A Dart library to parse and render [mustache templates](https://mustache.github.io/).
 
-See the [mustache manual](http://mustache.github.com/mustache.5.html) for detailed
-usage information.
+See the [mustache manual](http://mustache.github.com/mustache.5.html) for detailed usage information.
 
-This library passes all
-[mustache specification](https://github.com/mustache/spec/tree/master/specs)
-tests.
+This library passes all [mustache specification](https://github.com/mustache/spec/tree/master/specs) tests.
 
-Templates are parsed when created and can be rendered repeatedly with different
-values. A `TemplateException` is thrown if there is a problem parsing or
-rendering. Passing `name` to `Template` improves error messages by identifying
-which template failed.
-
-By default, output from `{{variable}}` tags is HTML-escaped. You can disable this
-with `htmlEscapeValues: false`, or use `{{{triple mustache}}}` / `{{&unescaped}}`
-for unescaped output.
-
-## Basic usage
-
-<?code-excerpt "lib/readme_excerpts.dart (BasicRender)"?>
+## Example usage
 ```dart
-  const source = '''
-{{# names }}
-<div>{{ lastname }}, {{ firstname }}</div>
-{{/ names }}
-{{^ names }}
-<div>No names.</div>
-{{/ names }}
-{{! I am a comment. }}
-''';
+import 'package:mustache_template/mustache_template.dart';
 
-  final template = Template(source, name: 'names-template');
-  final String output = template.renderString(<String, Object>{
-    'names': <Map<String, String>>[
-      <String, String>{'firstname': 'Greg', 'lastname': 'Lowe'},
-      <String, String>{'firstname': 'Bob', 'lastname': 'Johnson'},
-    ],
-  });
+main() {
+	var source = '''
+	  {{# names }}
+            <div>{{ lastname }}, {{ firstname }}</div>
+	  {{/ names }}
+	  {{^ names }}
+	    <div>No names.</div>
+	  {{/ names }}
+	  {{! I am a comment. }}
+	''';
+
+	var template = Template(source, name: 'template-filename.html');
+
+	var output = template.renderString({'names': [
+		{'firstname': 'Greg', 'lastname': 'Lowe'},
+		{'firstname': 'Bob', 'lastname': 'Johnson'}
+	]});
+
+	print(output);
+}
 ```
 
-## Strict mode vs lenient mode
+A template is parsed when it is created, after parsing it can be rendered any number of times with different values. A TemplateException is thrown if there is a problem parsing or rendering the template.
+
+The Template contstructor allows passing a name, this name will be used in error messages. When working with a number of templates, it is important to pass a name so that the error messages specify which template caused the error.
+
+By default all output from `{{variable}}` tags is html escaped, this behaviour can be changed by passing htmlEscapeValues : false to the Template constructor. You can also use a `{{{triple mustache}}}` tag, or a unescaped variable tag `{{&unescaped}}`, the output from these tags is not escaped.
+
+## Differences between strict mode and lenient mode.
 
 ### Strict mode (default)
 
-- Tag names may only contain `a-z`, `A-Z`, `0-9`, underscore, period, and minus.
-  Invalid characters throw `TemplateException` during parsing.
-- Rendering throws `TemplateException` when a referenced key/member is missing.
+* Tag names may only contain the characters a-z, A-Z, 0-9, underscore, period and minus. Other characters in tags will cause a TemplateException to be thrown during parsing.
+
+* During rendering, if no map key or object member which matches the tag name is found, then a TemplateException will be thrown.
 
 ### Lenient mode
 
-- Tag names may contain any characters.
-- Missing keys/members render as empty output.
-
-<?code-excerpt "lib/readme_excerpts.dart (StrictVsLenient)"?>
-```dart
-try {
-  Template('{{missing}}').renderString(<String, Object>{});
-} on TemplateException catch (_) {
-  // Strict mode (default): missing keys throw when rendering.
-}
-
-final String lenientOutput = Template(
-  '{{missing}}',
-  lenient: true,
-).renderString(<String, Object>{});
-```
+* Tag names may use any characters.
+* During rendering, if no map key or object member which matches the tag name is found, then silently ignore and output nothing.
 
 ## Nested paths
 
-<?code-excerpt "lib/readme_excerpts.dart (NestedPaths)"?>
 ```dart
-final template = Template('{{ author.name }}');
-final String output = template.renderString(<String, Object>{
-  'author': <String, String>{'name': 'Greg Lowe'},
-});
+  var t = Template('{{ author.name }}');
+  var output = template.renderString({'author': {'name': 'Greg Lowe'}});
 ```
 
-## Partials
+## Partials - example usage
 
-<?code-excerpt "lib/readme_excerpts.dart (Partials)"?>
 ```dart
-final partial = Template('{{ foo }}', name: 'partial');
-Template resolver(String name) {
-  if (name == 'partial-name') {
-    return partial;
-  }
-  throw StateError('Unknown partial: $name');
-}
 
-final template = Template('{{> partial-name }}', partialResolver: resolver);
-final String output = template.renderString(<String, String>{'foo': 'bar'});
+var partial = Template('{{ foo }}', name: 'partial');
+
+var resolver = (String name) {
+   if (name == 'partial-name') { // Name of partial tag.
+     return partial;
+   }
+};
+
+var t = Template('{{> partial-name }}', partialResolver: resolver);
+
+var output = t.renderString({'foo': 'bar'}); // bar
+
 ```
 
-## Lambdas
+## Lambdas - example usage
 
-Simple lambda value replacement:
-
-<?code-excerpt "lib/readme_excerpts.dart (LambdaSimpleValue)"?>
 ```dart
-final template = Template('{{ foo }}');
-final String output = template.renderString(<String, Object>{
-  'foo': (_) => 'bar',
-});
+var t = Template('{{# foo }}');
+var lambda = (_) => 'bar';
+t.renderString({'foo': lambda}); // bar
 ```
 
-Section replacement:
-
-<?code-excerpt "lib/readme_excerpts.dart (LambdaSectionReplacement)"?>
 ```dart
-final template = Template('{{# foo }}hidden{{/ foo }}');
-final String output = template.renderString(<String, Object>{
-  'foo': (_) => 'shown',
-});
+var t = Template('{{# foo }}hidden{{/ foo }}');
+var lambda = (_) => 'shown';
+t.renderString('foo': lambda); // shown
 ```
 
-Context-aware rendering with `LambdaContext.renderString()`:
-
-<?code-excerpt "lib/readme_excerpts.dart (LambdaRenderString)"?>
 ```dart
-final template = Template('{{# foo }}{{bar}}{{/ foo }}');
-final String output = template.renderString(<String, Object>{
-  'foo': (LambdaContext context) =>
-      '<b>${context.renderString().toUpperCase()}</b>',
-  'bar': 'pub',
-});
+var t = Template('{{# foo }}oi{{/ foo }}');
+var lambda = (LambdaContext ctx) => '<b>${ctx.renderString().toUpperCase()}</b>';
+t.renderString({'foo': lambda}); // <b>OI</b>
 ```
 
-In the following example, `LambdaContext.renderSource(source)` reparses
-`source` in the current context. This matches the default behavior in many
-mustache implementations, but reparsing can be slower and is often unnecessary,
-so use it only when needed.
-
-<?code-excerpt "lib/readme_excerpts.dart (LambdaRenderSource)"?>
 ```dart
-final template = Template('{{# foo }}{{bar}}{{/ foo }}');
-final String output = template.renderString(<String, Object>{
-  'foo': (LambdaContext context) =>
-      context.renderSource('${context.source} {{cmd}}'),
-  'bar': 'pub',
-  'cmd': 'build',
-});
+var t = Template('{{# foo }}{{bar}}{{/ foo }}');
+var lambda = (LambdaContext ctx) => '<b>${ctx.renderString().toUpperCase()}</b>';
+t.renderString({'foo': lambda, 'bar': 'pub'}); // <b>PUB</b>
+```
+
+```dart
+var t = Template('{{# foo }}{{bar}}{{/ foo }}');
+var lambda = (LambdaContext ctx) => '<b>${ctx.renderString().toUpperCase()}</b>';
+t.renderString({'foo': lambda, 'bar': 'pub'}); // <b>PUB</b>
+```
+
+In the following example `LambdaContext.renderSource(source)` re-parses the source string in the current context, this is the default behaviour in many mustache implementations. Since re-parsing the content is slow, and often not required, this library makes this step optional.
+
+```dart
+var t = Template('{{# foo }}{{bar}}{{/ foo }}');
+var lambda = (LambdaContext ctx) => ctx.renderSource(ctx.source + ' {{cmd}}');
+t.renderString({'foo': lambda, 'bar': 'pub', 'cmd': 'build'}); // pub build
 ```
