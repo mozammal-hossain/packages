@@ -1,6 +1,6 @@
 # Mustache templates
 
-A Dart library to parse and render [mustache templates](https://mustache.github.io/).
+A Dart library to parse and render [mustache templates]([https://mustache.github.io/](https://mustache.github.io/)).
 
 See the [mustache manual](http://mustache.github.com/mustache.5.html) for detailed usage information.
 
