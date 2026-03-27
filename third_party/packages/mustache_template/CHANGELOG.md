@@ -6,6 +6,7 @@
 * Moves excerpt sources to `example/lib/readme_excerpts.dart`.
 * Fixes the simple lambda README example to use `{{ foo }}` instead of an
   invalid unclosed section tag.
+* Fixes a broken README link to the Mustache manual.
 
 ## 2.0.3
 
