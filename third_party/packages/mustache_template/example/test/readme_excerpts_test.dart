@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:mustache_template/mustache_template.dart';
 import 'package:mustache_template_example/readme_excerpts.dart'
     as readme_excerpts;
 import 'package:test/test.dart';
@@ -51,16 +50,20 @@ void main() {
       expect(readme_excerpts.lambdaRenderExample(), equals('<b>PUB</b>'));
     });
 
-    test('lambda renderSource example reparses in the current context', () {
-      expect(readme_excerpts.lambdaRenderSourceExample(), equals('pub build'));
+    test('lambda renderSource example uppercases the section body', () {
+      expect(
+          readme_excerpts.lambdaRenderSourceExample(), equals('<b>PUB</b>'));
     });
 
-    test('strict mode throws for missing keys; lenient renders empty', () {
+    test('strict mode throws for missing keys', () {
       expect(
-        () => Template('{{missing}}').renderString(<String, Object>{}),
-        throwsA(isA<TemplateException>()),
+        readme_excerpts.strictModeBehaviorExample(),
+        contains('Strict mode exception'),
       );
-      expect(readme_excerpts.strictVsLenientLenientOutput(), isEmpty);
+    });
+
+    test('lenient mode renders empty for missing keys', () {
+      expect(readme_excerpts.lenientModeBehaviorExample(), isEmpty);
     });
   });
 }

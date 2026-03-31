@@ -10,5 +10,6 @@ void main() {
   print(lambdaShownExample());
   print(lambdaRenderExample());
   print(lambdaRenderSourceExample());
-  print(strictVsLenientLenientOutput());
+  print(strictModeBehaviorExample());
+  print(lenientModeBehaviorExample());
 }

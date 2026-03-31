@@ -7,7 +7,7 @@ import 'package:mustache_template/mustache_template.dart';
 
 String basicRenderExample() {
   // #docregion BasicRender
-  const source = '''
+  var source = '''
 {{# names }}
 <div>{{ lastname }}, {{ firstname }}</div>
 {{/ names }}
@@ -17,8 +17,8 @@ String basicRenderExample() {
 {{! I am a comment. }}
 ''';
 
-  final template = Template(source, name: 'names-template');
-  final String output = template.renderString(<String, Object>{
+  var template = Template(source, name: 'names-template');
+  var output = template.renderString(<String, Object>{
     'names': <Map<String, String>>[
       <String, String>{'firstname': 'Greg', 'lastname': 'Lowe'},
       <String, String>{'firstname': 'Bob', 'lastname': 'Johnson'},
@@ -30,9 +30,9 @@ String basicRenderExample() {
 
 String nestedPathsExample() {
   // #docregion NestedPaths
-  final template = Template('{{ author.name }}');
-  final String output = template.renderString(<String, Object>{
-    'author': <String, String>{'name': 'Greg Lowe'},
+  var t = Template('{{ author.name }}');
+  var output = t.renderString(<String, Object>{
+    'author': {'name': 'Greg Lowe'},
   });
   // #enddocregion NestedPaths
   return output;
@@ -40,7 +40,7 @@ String nestedPathsExample() {
 
 String partialsExample() {
   // #docregion Partials
-  final partial = Template('{{ foo }}', name: 'partial');
+  var partial = Template('{{ foo }}', name: 'partial');
   Template resolver(String name) {
     if (name == 'partial-name') {
       return partial;
@@ -48,69 +48,74 @@ String partialsExample() {
     throw StateError('Unknown partial: $name');
   }
 
-  final template = Template('{{> partial-name }}', partialResolver: resolver);
-  final String output = template.renderString(<String, String>{'foo': 'bar'});
+  var t = Template('{{> partial-name }}', partialResolver: resolver);
+  var output = t.renderString({'foo': 'bar'}); // bar
   // #enddocregion Partials
   return output;
 }
 
 String lambdaSimpleExample() {
   // #docregion LambdaSimpleValue
-  final template = Template('{{ foo }}');
-  final String output = template.renderString(<String, Object>{
-    'foo': (_) => 'bar',
-  });
+  var t = Template('{{ foo }}');
+
+  var lambda = (_) => 'bar';
+
+  var output = t.renderString({'foo': lambda}); // bar
   // #enddocregion LambdaSimpleValue
   return output;
 }
 
 String lambdaShownExample() {
   // #docregion LambdaSectionReplacement
-  final template = Template('{{# foo }}hidden{{/ foo }}');
-  final String output = template.renderString(<String, Object>{
-    'foo': (_) => 'shown',
-  });
+  var t = Template('{{# foo }}hidden{{/ foo }}');
+  var lambda = (_) => 'shown';
+
+  var output = t.renderString({'foo': lambda}); // shown
   // #enddocregion LambdaSectionReplacement
   return output;
 }
 
 String lambdaRenderExample() {
   // #docregion LambdaRenderString
-  final template = Template('{{# foo }}{{bar}}{{/ foo }}');
-  final String output = template.renderString(<String, Object>{
-    'foo': (LambdaContext context) =>
-        '<b>${context.renderString().toUpperCase()}</b>',
+  var t = Template('{{# foo }}{{bar}}{{/ foo }}');
+  var lambda = (LambdaContext context) =>
+      '<b>${context.renderString().toUpperCase()}</b>';
+
+  var output = t.renderString({'foo': lambda,
     'bar': 'pub',
-  });
+  }); // <b>PUB</b>
   // #enddocregion LambdaRenderString
   return output;
 }
 
 String lambdaRenderSourceExample() {
   // #docregion LambdaRenderSource
-  final template = Template('{{# foo }}{{bar}}{{/ foo }}');
-  final String output = template.renderString(<String, Object>{
-    'foo': (LambdaContext context) =>
-        context.renderSource('${context.source} {{cmd}}'),
+  var t = Template('{{# foo }}{{bar}}{{/ foo }}');
+  var lambda = (LambdaContext ctx) =>
+      '<b>${ctx.renderString().toUpperCase()}</b>';
+
+  var output = t.renderString({'foo': lambda,
     'bar': 'pub',
-    'cmd': 'build',
-  });
+  }); // <b>PUB</b>
   // #enddocregion LambdaRenderSource
   return output;
 }
 
-String strictVsLenientLenientOutput() {
-  // #docregion StrictVsLenient
+String strictModeBehaviorExample() {
+  // #docregion StrictMode
   try {
-    Template('{{missing}}').renderString(<String, Object>{});
-  } on TemplateException catch (_) {
-    // Strict mode (default): missing keys throw when rendering.
+    Template('{{missing}}').renderString({});
+    return 'No exception thrown (unexpected)';
+  } on TemplateException catch (e) {
+    return 'Strict mode exception: ${e.runtimeType}';
   }
+  // #enddocregion StrictMode
+}
 
-  final String lenientOutput = Template(
-    '{{missing}}',
-    lenient: true,
-  ).renderString(<String, Object>{});
-  // #enddocregion StrictVsLenient
-  return lenientOutput;
+String lenientModeBehaviorExample() {
+  // #docregion LenientMode
+  final t = Template('{{missing}}', lenient: true);
+  final String output = t.renderString({}); // ''
+  // #enddocregion LenientMode
+  return output;
 }

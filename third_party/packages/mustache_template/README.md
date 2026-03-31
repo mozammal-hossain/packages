@@ -46,10 +46,23 @@ By default all output from `{{variable}}` tags is html escaped, this behaviour c
 
 * During rendering, if no map key or object member which matches the tag name is found, then a TemplateException will be thrown.
 
+```dart
+try {
+  Template('{{missing}}').renderString({});
+} on TemplateException catch (e) {
+  // Strict mode (default): missing keys throw when rendering.
+}
+```
+
 ### Lenient mode
 
 * Tag names may use any characters.
 * During rendering, if no map key or object member which matches the tag name is found, then silently ignore and output nothing.
+
+```dart
+final t = Template('{{missing}}', lenient: true);
+final String output = t.renderString({}); // ''
+```
 
 ## Nested paths
 
