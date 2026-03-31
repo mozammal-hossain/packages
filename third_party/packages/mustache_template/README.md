@@ -1,3 +1,5 @@
+<?code-excerpt path-base="example/lib"?>
+
 # Mustache templates
 
 A Dart library to parse and render [mustache templates](https://mustache.github.io/).
@@ -7,29 +9,25 @@ See the [mustache manual](http://mustache.github.com/mustache.5.html) for detail
 This library passes all [mustache specification](https://github.com/mustache/spec/tree/master/specs) tests.
 
 ## Example usage
+<?code-excerpt "readme_excerpts.dart (BasicRender)"?>
 ```dart
-import 'package:mustache_template/mustache_template.dart';
+  var source = '''
+{{# names }}
+<div>{{ lastname }}, {{ firstname }}</div>
+{{/ names }}
+{{^ names }}
+<div>No names.</div>
+{{/ names }}
+{{! I am a comment. }}
+''';
 
-main() {
-	var source = '''
-	  {{# names }}
-            <div>{{ lastname }}, {{ firstname }}</div>
-	  {{/ names }}
-	  {{^ names }}
-	    <div>No names.</div>
-	  {{/ names }}
-	  {{! I am a comment. }}
-	''';
-
-	var template = Template(source, name: 'template-filename.html');
-
-	var output = template.renderString({'names': [
-		{'firstname': 'Greg', 'lastname': 'Lowe'},
-		{'firstname': 'Bob', 'lastname': 'Johnson'}
-	]});
-
-	print(output);
-}
+  var template = Template(source, name: 'names-template');
+  var output = template.renderString(<String, Object>{
+    'names': <Map<String, String>>[
+      <String, String>{'firstname': 'Greg', 'lastname': 'Lowe'},
+      <String, String>{'firstname': 'Bob', 'lastname': 'Johnson'},
+    ],
+  });
 ```
 
 A template is parsed when it is created, after parsing it can be rendered any number of times with different values. A TemplateException is thrown if there is a problem parsing or rendering the template.
@@ -46,72 +44,46 @@ By default all output from `{{variable}}` tags is html escaped, this behaviour c
 
 * During rendering, if no map key or object member which matches the tag name is found, then a TemplateException will be thrown.
 
+<?code-excerpt "readme_excerpts.dart (StrictMode)"?>
+```dart
+late String result;
+try {
+  Template('{{missing}}').renderString({});
+  result = 'No exception thrown (unexpected)';
+} on TemplateException catch (e) {
+  // Strict mode (default): missing keys throw when rendering.
+  result = 'Strict mode exception: ${e.runtimeType}';
+}
+```
+
 ### Lenient mode
 
 * Tag names may use any characters.
 * During rendering, if no map key or object member which matches the tag name is found, then silently ignore and output nothing.
 
-## Nested paths
-
+<?code-excerpt "readme_excerpts.dart (LenientMode)"?>
 ```dart
-  var t = Template('{{ author.name }}');
-  var output = template.renderString({'author': {'name': 'Greg Lowe'}});
+final t = Template('{{missing}}', lenient: true);
+final String output = t.renderString({}); // ''
 ```
 
-## Partials - example usage
+## Partials
 
+<?code-excerpt "readme_excerpts.dart (Partials)"?>
 ```dart
-
 var partial = Template('{{ foo }}', name: 'partial');
-
-var resolver = (String name) {
-   if (name == 'partial-name') { // Name of partial tag.
-     return partial;
-   }
-};
+Template resolver(String name) {
+  if (name == 'partial-name') {
+    return partial;
+  }
+  throw StateError('Unknown partial: $name');
+}
 
 var t = Template('{{> partial-name }}', partialResolver: resolver);
-
 var output = t.renderString({'foo': 'bar'}); // bar
-
 ```
 
-## Lambdas - example usage
+## More examples
 
-```dart
-var t = Template('{{# foo }}');
-var lambda = (_) => 'bar';
-t.renderString({'foo': lambda}); // bar
-```
-
-```dart
-var t = Template('{{# foo }}hidden{{/ foo }}');
-var lambda = (_) => 'shown';
-t.renderString('foo': lambda); // shown
-```
-
-```dart
-var t = Template('{{# foo }}oi{{/ foo }}');
-var lambda = (LambdaContext ctx) => '<b>${ctx.renderString().toUpperCase()}</b>';
-t.renderString({'foo': lambda}); // <b>OI</b>
-```
-
-```dart
-var t = Template('{{# foo }}{{bar}}{{/ foo }}');
-var lambda = (LambdaContext ctx) => '<b>${ctx.renderString().toUpperCase()}</b>';
-t.renderString({'foo': lambda, 'bar': 'pub'}); // <b>PUB</b>
-```
-
-```dart
-var t = Template('{{# foo }}{{bar}}{{/ foo }}');
-var lambda = (LambdaContext ctx) => '<b>${ctx.renderString().toUpperCase()}</b>';
-t.renderString({'foo': lambda, 'bar': 'pub'}); // <b>PUB</b>
-```
-
-In the following example `LambdaContext.renderSource(source)` re-parses the source string in the current context, this is the default behaviour in many mustache implementations. Since re-parsing the content is slow, and often not required, this library makes this step optional.
-
-```dart
-var t = Template('{{# foo }}{{bar}}{{/ foo }}');
-var lambda = (LambdaContext ctx) => ctx.renderSource(ctx.source + ' {{cmd}}');
-t.renderString({'foo': lambda, 'bar': 'pub', 'cmd': 'build'}); // pub build
-```
+For additional usage including nested paths, lambdas, and
+`LambdaContext.renderSource`, see the [example app](example/).
