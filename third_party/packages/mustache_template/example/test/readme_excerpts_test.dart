@@ -1,0 +1,72 @@
+// ignore_for_file: avoid_relative_lib_imports
+
+import 'dart:async';
+
+import 'package:mustache_template_example/readme_excerpts.dart'
+    as readme_excerpts;
+import 'package:test/test.dart';
+
+import '../main.dart' as example_app;
+
+void main() {
+  group('Example app', () {
+    test('example app runs without error', () {
+      expect(
+        () => runZoned<void>(
+          () => example_app.main(),
+          zoneSpecification: ZoneSpecification(
+            print: (Zone self, ZoneDelegate parent, Zone zone, String line) {},
+          ),
+        ),
+        returnsNormally,
+      );
+    });
+  });
+
+  group('README excerpts', () {
+    test('basic render example includes rendered names', () {
+      final String out = readme_excerpts.basicRenderExample();
+      expect(out, contains('Lowe, Greg'));
+      expect(out, contains('Johnson, Bob'));
+    });
+
+    test('nested paths example renders the nested value', () {
+      expect(readme_excerpts.nestedPathsExample(), equals('Greg Lowe'));
+    });
+
+    test('partials example renders the partial output', () {
+      expect(readme_excerpts.partialsExample(), equals('bar'));
+    });
+
+    test('simple lambda example renders the replacement text', () {
+      expect(readme_excerpts.lambdaSimpleExample(), equals('bar'));
+    });
+
+    test('lambda block example renders the alternate text', () {
+      expect(readme_excerpts.lambdaShownExample(), equals('shown'));
+    });
+
+    test('lambda uppercase example wraps rendered section body', () {
+      expect(readme_excerpts.lambdaUppercaseOibExample(), equals('<b>OI</b>'));
+    });
+
+    test('lambda render example uppercases the section body', () {
+      expect(readme_excerpts.lambdaRenderExample(), equals('<b>PUB</b>'));
+    });
+
+    test('lambda renderSource example re-parses source with extra command', () {
+      expect(readme_excerpts.lambdaRenderSourceExample(), equals('pub build'));
+    });
+
+    test('strict mode throws for missing keys', () {
+      expect(
+        readme_excerpts.strictModeBehaviorExample(),
+        contains('Strict mode exception'),
+      );
+    });
+
+    test('lenient mode renders empty for missing keys', () {
+      expect(readme_excerpts.lenientModeBehaviorExample(), isEmpty);
+    });
+  });
+}
