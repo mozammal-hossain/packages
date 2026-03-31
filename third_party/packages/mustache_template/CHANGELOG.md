@@ -1,7 +1,7 @@
 ## 2.0.4
 
 * Adds an example package with runnable samples and tests.
-* Generalized README.md
+* Migrates README.md to use code excerpts from the new example.
 
 ## 2.0.3
 
