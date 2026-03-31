@@ -1,3 +1,8 @@
+## 2.0.4
+
+* Adds an example package with runnable samples and tests.
+* Generalized README.md
+
 ## 2.0.3
 
 * Updates minimum supported SDK version to Flutter 3.35/Dart 3.9.
