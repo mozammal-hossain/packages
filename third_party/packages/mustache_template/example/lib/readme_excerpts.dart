@@ -1,13 +1,13 @@
 // This file hosts README code excerpts (see README.md) and is imported by the
 // example runner and excerpt tests.
 
-// ignore_for_file: public_member_api_docs, prefer_final_locals, specify_nonobvious_local_variable_types, prefer_function_declarations_over_variables, prefer_interpolation_to_compose_strings
+// ignore_for_file: public_member_api_docs, specify_nonobvious_local_variable_types, prefer_function_declarations_over_variables
 
 import 'package:mustache_template/mustache_template.dart';
 
 String basicRenderExample() {
   // #docregion BasicRender
-  var source = '''
+  const source = '''
 {{# names }}
 <div>{{ lastname }}, {{ firstname }}</div>
 {{/ names }}
@@ -17,8 +17,8 @@ String basicRenderExample() {
 {{! I am a comment. }}
 ''';
 
-  var template = Template(source, name: 'names-template');
-  var output = template.renderString(<String, Object>{
+  final template = Template(source, name: 'names-template');
+  final output = template.renderString(<String, Object>{
     'names': <Map<String, String>>[
       <String, String>{'firstname': 'Greg', 'lastname': 'Lowe'},
       <String, String>{'firstname': 'Bob', 'lastname': 'Johnson'},
@@ -30,8 +30,8 @@ String basicRenderExample() {
 
 String nestedPathsExample() {
   // #docregion NestedPaths
-  var t = Template('{{ author.name }}');
-  var output = t.renderString(<String, Object>{
+  final t = Template('{{ author.name }}');
+  final output = t.renderString(<String, Object>{
     'author': {'name': 'Greg Lowe'},
   });
   // #enddocregion NestedPaths
@@ -40,7 +40,7 @@ String nestedPathsExample() {
 
 String partialsExample() {
   // #docregion Partials
-  var partial = Template('{{ foo }}', name: 'partial');
+  final partial = Template('{{ foo }}', name: 'partial');
   Template resolver(String name) {
     if (name == 'partial-name') {
       return partial;
@@ -48,7 +48,7 @@ String partialsExample() {
     throw StateError('Unknown partial: $name');
   }
 
-  var t = Template('{{> partial-name }}', partialResolver: resolver);
+  final t = Template('{{> partial-name }}', partialResolver: resolver);
   var output = t.renderString({'foo': 'bar'}); // bar
   // #enddocregion Partials
   return output;
@@ -56,53 +56,54 @@ String partialsExample() {
 
 String lambdaSimpleExample() {
   // #docregion LambdaSimpleValue
-  var t = Template('{{ foo }}');
+  final t = Template('{{ foo }}');
 
-  var lambda = (_) => 'bar';
+  final lambda = (_) => 'bar';
 
-  var output = t.renderString({'foo': lambda}); // bar
+  final output = t.renderString({'foo': lambda}); // bar
   // #enddocregion LambdaSimpleValue
   return output;
 }
 
 String lambdaShownExample() {
   // #docregion LambdaSectionReplacement
-  var t = Template('{{# foo }}hidden{{/ foo }}');
-  var lambda = (_) => 'shown';
+  final t = Template('{{# foo }}hidden{{/ foo }}');
+  final lambda = (_) => 'shown';
 
-  var output = t.renderString({'foo': lambda}); // shown
+  final output = t.renderString({'foo': lambda}); // shown
   // #enddocregion LambdaSectionReplacement
   return output;
 }
 
 String lambdaUppercaseOibExample() {
   // #docregion LambdaUppercaseOib
-  var t = Template('{{# foo }}oi{{/ foo }}');
-  var lambda = (LambdaContext ctx) =>
+  final t = Template('{{# foo }}oi{{/ foo }}');
+  final lambda = (LambdaContext ctx) =>
       '<b>${ctx.renderString().toUpperCase()}</b>';
 
-  var output = t.renderString({'foo': lambda}); // <b>OI</b>
+  final output = t.renderString({'foo': lambda}); // <b>OI</b>
   // #enddocregion LambdaUppercaseOib
   return output;
 }
 
 String lambdaRenderExample() {
   // #docregion LambdaRenderString
-  var t = Template('{{# foo }}{{bar}}{{/ foo }}');
-  var lambda = (LambdaContext context) =>
+  final t = Template('{{# foo }}{{bar}}{{/ foo }}');
+  final lambda = (LambdaContext context) =>
       '<b>${context.renderString().toUpperCase()}</b>';
 
-  var output = t.renderString({'foo': lambda, 'bar': 'pub'}); // <b>PUB</b>
+  final output = t.renderString({'foo': lambda, 'bar': 'pub'}); // <b>PUB</b>
   // #enddocregion LambdaRenderString
   return output;
 }
 
 String lambdaRenderSourceExample() {
   // #docregion LambdaRenderSource
-  var t = Template('{{# foo }}{{bar}}{{/ foo }}');
-  var lambda = (LambdaContext ctx) => ctx.renderSource(ctx.source + ' {{cmd}}');
+  final t = Template('{{# foo }}{{bar}}{{/ foo }}');
+  final lambda = (LambdaContext ctx) =>
+      ctx.renderSource(ctx.source + ' {{cmd}}');
 
-  var output = t.renderString({
+  final output = t.renderString({
     'foo': lambda,
     'bar': 'pub',
     'cmd': 'build',
