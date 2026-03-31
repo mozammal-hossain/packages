@@ -8,6 +8,7 @@ void main() {
   print(partialsExample());
   print(lambdaSimpleExample());
   print(lambdaShownExample());
+  print(lambdaUppercaseOibExample());
   print(lambdaRenderExample());
   print(lambdaRenderSourceExample());
   print(strictModeBehaviorExample());

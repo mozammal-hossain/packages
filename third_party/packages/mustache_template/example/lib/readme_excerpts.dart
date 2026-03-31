@@ -1,7 +1,7 @@
 // This file hosts README code excerpts (see README.md) and is imported by the
 // example runner and excerpt tests.
 
-// ignore_for_file: public_member_api_docs
+// ignore_for_file: public_member_api_docs, prefer_final_locals, specify_nonobvious_local_variable_types, prefer_function_declarations_over_variables, prefer_interpolation_to_compose_strings
 
 import 'package:mustache_template/mustache_template.dart';
 
@@ -75,15 +75,24 @@ String lambdaShownExample() {
   return output;
 }
 
+String lambdaUppercaseOibExample() {
+  // #docregion LambdaUppercaseOib
+  var t = Template('{{# foo }}oi{{/ foo }}');
+  var lambda = (LambdaContext ctx) =>
+      '<b>${ctx.renderString().toUpperCase()}</b>';
+
+  var output = t.renderString({'foo': lambda}); // <b>OI</b>
+  // #enddocregion LambdaUppercaseOib
+  return output;
+}
+
 String lambdaRenderExample() {
   // #docregion LambdaRenderString
   var t = Template('{{# foo }}{{bar}}{{/ foo }}');
   var lambda = (LambdaContext context) =>
       '<b>${context.renderString().toUpperCase()}</b>';
 
-  var output = t.renderString({'foo': lambda,
-    'bar': 'pub',
-  }); // <b>PUB</b>
+  var output = t.renderString({'foo': lambda, 'bar': 'pub'}); // <b>PUB</b>
   // #enddocregion LambdaRenderString
   return output;
 }
@@ -91,25 +100,29 @@ String lambdaRenderExample() {
 String lambdaRenderSourceExample() {
   // #docregion LambdaRenderSource
   var t = Template('{{# foo }}{{bar}}{{/ foo }}');
-  var lambda = (LambdaContext ctx) =>
-      '<b>${ctx.renderString().toUpperCase()}</b>';
+  var lambda = (LambdaContext ctx) => ctx.renderSource(ctx.source + ' {{cmd}}');
 
-  var output = t.renderString({'foo': lambda,
+  var output = t.renderString({
+    'foo': lambda,
     'bar': 'pub',
-  }); // <b>PUB</b>
+    'cmd': 'build',
+  }); // pub build
   // #enddocregion LambdaRenderSource
   return output;
 }
 
 String strictModeBehaviorExample() {
   // #docregion StrictMode
+  late String result;
   try {
     Template('{{missing}}').renderString({});
-    return 'No exception thrown (unexpected)';
+    result = 'No exception thrown (unexpected)';
   } on TemplateException catch (e) {
-    return 'Strict mode exception: ${e.runtimeType}';
+    // Strict mode (default): missing keys throw when rendering.
+    result = 'Strict mode exception: ${e.runtimeType}';
   }
   // #enddocregion StrictMode
+  return result;
 }
 
 String lenientModeBehaviorExample() {

@@ -46,13 +46,16 @@ void main() {
       expect(readme_excerpts.lambdaShownExample(), equals('shown'));
     });
 
+    test('lambda uppercase example wraps rendered section body', () {
+      expect(readme_excerpts.lambdaUppercaseOibExample(), equals('<b>OI</b>'));
+    });
+
     test('lambda render example uppercases the section body', () {
       expect(readme_excerpts.lambdaRenderExample(), equals('<b>PUB</b>'));
     });
 
-    test('lambda renderSource example uppercases the section body', () {
-      expect(
-          readme_excerpts.lambdaRenderSourceExample(), equals('<b>PUB</b>'));
+    test('lambda renderSource example re-parses source with extra command', () {
+      expect(readme_excerpts.lambdaRenderSourceExample(), equals('pub build'));
     });
 
     test('strict mode throws for missing keys', () {
