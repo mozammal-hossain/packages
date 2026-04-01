@@ -2,6 +2,7 @@
 
 * Adds an example package with runnable samples and tests.
 * Migrates README.md to use code excerpts from the new example.
+* Fixes a broken README link to the Mustache manual.
 
 ## 2.0.3
 
