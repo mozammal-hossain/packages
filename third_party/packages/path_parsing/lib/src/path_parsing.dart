@@ -62,8 +62,8 @@ abstract class PathProxy {
 @immutable
 class _PathOffset {
   const _PathOffset(this.dx, this.dy)
-    : assert(dx != null), // ignore: unnecessary_null_comparison
-      assert(dy != null); // ignore: unnecessary_null_comparison
+      : assert(dx != null), // ignore: unnecessary_null_comparison
+        assert(dy != null); // ignore: unnecessary_null_comparison
 
   static _PathOffset get zero => const _PathOffset(0.0, 0.0);
   final double dx;
@@ -105,10 +105,10 @@ const double _piOverTwoFloat = math.pi / 2.0;
 class SvgPathStringSource {
   /// Creates a parser for the given SVG path data string.
   SvgPathStringSource(this._string)
-    : assert(_string != null), // ignore: unnecessary_null_comparison
-      _previousCommand = SvgPathSegType.unknown,
-      _idx = 0,
-      _length = _string.length {
+      : assert(_string != null), // ignore: unnecessary_null_comparison
+        _previousCommand = SvgPathSegType.unknown,
+        _idx = 0,
+        _length = _string.length {
     _skipOptionalSvgSpaces();
   }
 
@@ -480,11 +480,11 @@ bool isQuadraticCommand(SvgPathSegType command) {
 class PathSegmentData {
   /// Creates a [PathSegmentData] with [command] set to [SvgPathSegType.unknown].
   PathSegmentData()
-    : command = SvgPathSegType.unknown,
-      arcSweep = false,
-      arcLarge = false;
+      : command = SvgPathSegType.unknown,
+        arcSweep = false,
+        arcLarge = false;
 
-  /// The arc radii as a point where dx is r1 and dy is r2.
+  /// The arc radii as a point where dx is [r1] and dy is [r2].
   @Deprecated('Utility member that should not be public.')
   // TODO(kevmoo): Remove this in the next release https://github.com/flutter/flutter/issues/157940
   _PathOffset get arcRadii => point1;
