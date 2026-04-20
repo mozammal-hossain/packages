@@ -1,4 +1,4 @@
-## NEXT
+## 1.1.1
 
 * Updates minimum supported SDK version to Flutter 3.35/Dart 3.9.
 * Adds documentation for all public API members.
