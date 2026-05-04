@@ -473,7 +473,7 @@ bool isQuadraticCommand(SvgPathSegType command) {
 
 /// Data for a single SVG path segment command.
 class PathSegmentData {
-  /// Creates a [PathSegmentData] with [command] set to [SvgPathSegType.unknown].
+  /// Creates a [PathSegmentData] with default values.
   PathSegmentData()
     : command = SvgPathSegType.unknown,
       arcSweep = false,
